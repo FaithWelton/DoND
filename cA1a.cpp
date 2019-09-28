@@ -6,7 +6,7 @@
 * DESCRIPTION :
 * The functions in this file are used to
 simulate Deal or No Deal as a text
-console-based program.
+console-based program
 */
 
 #include<iostream>
