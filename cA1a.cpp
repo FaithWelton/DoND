@@ -23,6 +23,8 @@ int main()
 	double suit[26] = { .01,1,5,10,25,50,75,100,200,300,400,500,750,1000,5000,10000,25000,50000,75000,100000,200000,300000,400000,500000,750000,1000000 };
 	double banker;
 
+	bool caseChoices[26] = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, };
+
 	int number;
 	int remaining = 25;
 	int counter = 0;
@@ -88,7 +90,7 @@ int main()
 	system("CLS"); /*Clears screen*/
 
 	/*
-	*While loop to as user to input suitcase choices
+	*While loop to ask user to input suitcase choices
 	*/
 
 	while (counter <= 26 && remaining != -1)
@@ -103,10 +105,13 @@ int main()
 				cout << "Invalid Input. Enter [1-26] only. Do not enter a previously entered number" << endl;
 				continue;
 			}
+
 			randomSuit = rand() % 26 + 1;
 
 			cout << "Suitcase " << number << " is $" << suit[ randomSuit - 1 ] << endl;
 			cout << "There are still " << remaining << " remaining suitcases to be opened." << endl;
+
+			//todo: store chosen suitcases so can display remaining
 
 			rounds = rounds + 5;
 			turn = 1 - rounds;
@@ -126,20 +131,22 @@ int main()
 		remaining = remaining - counter;
 
 		string answer;
-		cout << "\n Banker offers you: $" << randomOffer << endl;
+		cout << "\n Banker offers you: $" << randomOffer << endl; //todo: make banker come in after 5 more are picked if player choses not to take offer
 		cout << "\n Deal or No Deal? [y/n] : ";
 		cin >> ws; /*Clears cin buffer so it can be used later*/
 		getline(cin, answer);
 
 		if (answer == "n")
 		{
-			continue;
+			continue; //todo: go back and continue playing
 		}
 		else if (answer == "y")
 		{
 			cout << "\n CONGRATULATIONS! \n THANKS FOR PLAYING!" << endl;
 			break;
+			//todo: display any remaining cases
 		}
 	}
 	system("pause");
+	return 0;
 }
