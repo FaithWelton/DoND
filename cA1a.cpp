@@ -15,39 +15,58 @@
 #include<string>
 #include <conio.h>
 #include "cA1a.h"
+#include <iomanip>
+#pragma warning(disable: 4996)
 
 using namespace std;
+
+int getNum(void)
+{
+	/* function limitation: only accepts 120 characters of input */
+	char record[121] = { 0 };
+	int number = 0;
+
+	/* use fgets() to get a string from the keyboard */
+	fgets(record, 121, stdin);
+
+	/* extract the number from the string; sscanf() returns a number
+	*corresponding with the number of items it found in the string */
+	if (sscanf(record, "%d", &number) != 1)
+	{
+		/* if the user did not enter a number recognizable by
+		*the system, set number to -1 */
+		number = -1;
+	}
+	return number;
+}
+
 
 int main()
 {
 	double suit[26] = { .01,1,5,10,25,50,75,100,200,300,400,500,750,1000,5000,10000,25000,50000,75000,100000,200000,300000,400000,500000,750000,1000000 };
-	double banker;
 
-	bool caseChoices[26] = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, };
+	bool caseChoices[26] = { false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false };
 
-	int number;
-	int remaining = 25;
-	int counter = 0;
-	int turn = 2;
-	int rounds = 1;
-	int x = 25;
-	int randomSuit;
-	int randomOffer;
-	int answer = 1;
-	srand((unsigned)time(NULL));
+	string answer = "";
 
+	int number = 0;
+	int remaining = 26;
+	int turn = 6;
+	int turnInterval = 6;
+	int playerCase = -1;
+	
 	/*
 	*Introduction
 	*/
 
-	printf("LET'S PLAY. . .\n");
-	printf("\n**********************");
-	printf("\n*****    DEAL    *****");
-	printf("\n*****     OR     *****");
-	printf("\n*****   NO DEAL  *****");
-	printf("\n**********************\n\n");
+	cout << "LET'S PLAY. . .\n";
+	cout << "\n**********************";
+	cout << "\n*****    DEAL    *****";
+	cout << "\n*****     OR     *****";
+	cout << "\n*****   NO DEAL  *****";
+	cout << "\n**********************\n\n";
 
-	printf("Press any key to continue...\n");
+	cout << "Press any key to continue...\n";
 	_getch();
 
 	system("CLS"); /*Clears screen*/
@@ -61,7 +80,7 @@ int main()
 	getline(cin, name);
 	cout << "\nHello " << name << "! \n Welcome to the game!" << "\n";
 
-	printf("\n Press any key to continue...\n");
+	cout << "\n Press any key to continue...\n";
 	_getch();
 
 	system("CLS"); /*Clears screen*/
@@ -70,7 +89,7 @@ int main()
 	*Intstructions for how to play
 	*/
 
-	printf("\n**********************\n\n");
+	cout << "\n**********************\n\n";
 
 	cout << "There are 26 suitcases each containing an amount of money. \n \n";
 	cout << "The contents vary from $0.01 to $1,000,000. \n \n";
@@ -82,42 +101,110 @@ int main()
 	cout << "The game goes on until you accept an offer or there are no more cases. \n \n";
 	cout << "Good luck! \n \n";
 
-	printf("**********************\n\n");
+	cout << "\n**********************\n\n";
 
- 	printf("\n Press any key to continue...\n");
+ 	cout << "\n Press any key to continue...\n";
 	_getch();
 	
 	system("CLS"); /*Clears screen*/
 
 	/*
+	*For loop to randomize suitcase contents
+	*/
+
+	for (int c = 0; c < 26; c = c + 1)
+	{
+		int randomNum = rand();
+		randomNum = randomNum % 26;
+		double saveNum = suit[c];
+		suit[c] = suit[randomNum];
+		suit[randomNum] = saveNum;
+	}
+
+	/*
 	*While loop to ask user to input suitcase choices
 	*/
 
-	while (counter <= 26 && remaining != -1)
+	cout << "\nPlease choose your suitcase! [1-26]: ";
+	number = getNum();
+	cout << "\n";
+
+	while (number > 26 || number < 1 || caseChoices[number - 1] == true)
 	{
-		while (counter <= 5 && turn != -1)
+		cout << "Invalid Input. Enter [1-26] only. Please choose a suitcase!" << endl;
+		number = getNum();
+	}
+
+	remaining = remaining - 1;
+
+	cout << "There are still " << remaining << " remaining suitcases to be opened." << endl;
+
+	caseChoices[number - 1] = true;
+	playerCase = number - 1;
+
+	while (remaining != 0)
+	{
+		while (turn != 0)
 		{
-			cout << "\nPlease choose your suitcase! [1-26]: ";
-			cin >> number;
+			cout << "\nPlease choose a suitcase to reveal! [1-26]: ";
+			number = getNum();
 			cout << "\n";
-			if (number > 26 || number < 1)
+			if (number > 26 || number < 1 || caseChoices[number -1] == true)
 			{
 				cout << "Invalid Input. Enter [1-26] only. Do not enter a previously entered number" << endl;
 				continue;
 			}
 
-			randomSuit = rand() % 26 + 1;
+			remaining = remaining - 1;
 
-			cout << "Suitcase " << number << " is $" << suit[ randomSuit - 1 ] << endl;
+
+			cout << "Suitcase " << number << " is $" << fixed << setprecision(2) << suit[ number - 1 ] << endl;
 			cout << "There are still " << remaining << " remaining suitcases to be opened." << endl;
 
-			//todo: store chosen suitcases so can display remaining
+			caseChoices[number - 1] = true;
 
-			rounds = rounds + 5;
-			turn = 1 - rounds;
-			counter = counter + 1;
-			remaining = x - counter;
+			for (int s = 0; s < 26; s = s + 1)
+			{
+				if (caseChoices[s] == false)
+				{
+					cout << " [ " << s + 1 << " ] ";
+				}
+			}
 
+			turn = turn - 1;
+		}
+		
+		if (turn == 0 && remaining == 1)
+		{
+			cout << "\n Would you like to switch your case? [y/n] " << endl;
+			getline(cin, answer);
+
+			while (answer != "n" && answer != "y");
+			{
+				cout << "Invalid Input. Enter [y/n] only. Please try again!" << endl;
+				getline(cin, answer);
+			}
+
+			int finalCase;
+
+			for (int s = 0; s < 26; s = s + 1)
+			{
+				if (caseChoices[s] == false)
+				{
+					finalCase = s;
+				}
+			}
+
+			if (answer == "y")
+			{
+				int oldFinalCase = finalCase;
+				finalCase = playerCase;
+				playerCase = oldFinalCase;
+			}
+			cout << "\n Your chosen suitcase contained: S" << suit[playerCase] << endl;
+			cout << "\n Case #: " << finalCase + 1 << " value: " << suit[finalCase] << endl;
+
+			break;
 		}
 
 		/*
@@ -126,25 +213,55 @@ int main()
 		*or player runs out of suitcases to open
 		*/
 
-		randomOffer = (rand() % 100 + 15) * 1000;
-		counter = counter + 1;
-		remaining = remaining - counter;
+		double sum = 0;
 
-		string answer;
-		cout << "\n Banker offers you: $" << randomOffer << endl; //todo: make banker come in after 5 more are picked if player choses not to take offer
+		for (int s = 0; s < 26; s = s + 1)
+		{
+			if (caseChoices[s] == false)
+			{
+				sum = sum + suit[s];
+			}
+		}
+
+		double avg = sum / remaining;
+		double randomOffer;
+
+		randomOffer = rand() % 110 + 75.0;
+
+		randomOffer = (randomOffer / 100) * avg;
+
+		cout << "\n Banker offers you: $" << randomOffer << endl; 
 		cout << "\n Deal or No Deal? [y/n] : ";
-		cin >> ws; /*Clears cin buffer so it can be used later*/
 		getline(cin, answer);
 
+		while (answer != "n" && answer != "y")
+		{
+			cout << "Invalid Input. Enter [y/n] only. Please try again!" << endl;
+			getline(cin, answer);
+		}
 		if (answer == "n")
 		{
-			continue; //todo: go back and continue playing
+			if (turnInterval > 1 || remaining == 1)
+			{
+				turnInterval = turnInterval - 1;
+			}
+			turn = turnInterval;
 		}
 		else if (answer == "y")
 		{
-			cout << "\n CONGRATULATIONS! \n THANKS FOR PLAYING!" << endl;
+			cout << "\n Congratulations! You have accepted the bankers offer of: S" << randomOffer << endl;
+			cout << "\n Your chosen suitcase contained: S" << suit[playerCase] << endl;
+			cout << "\n The remaining cases are:" << endl;
+
+			for (int s = 0; s < 26; s = s + 1)
+			{
+				if (caseChoices[s] == false)
+				{
+					cout << "\n Case #: " << s + 1 << " value: " << suit[s] << endl;
+				}
+			}
+
 			break;
-			//todo: display any remaining cases
 		}
 	}
 	system("pause");
